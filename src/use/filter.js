@@ -18,6 +18,15 @@ class Filter {
         }
     }
 
+    toJSON() {
+        return {
+            name: this.key,
+            values: this.type === FILTER_TYPES.SET ?
+                Array.from(this.values.values()) :
+                this.values
+        }
+    }
+
     isEmpty() {
         return this.values === null ||
             (this.type === FILTER_TYPES.SET && this.values.size === 0)

@@ -1,10 +1,10 @@
 <template>
     <v-autocomplete
         style="width: 97%;"
-        v-model="data.selected"
+        :model-value="selected"
         :items="data.items"
-        item-title="name"
-        item-value="name"
+        item-title="values"
+        item-value="values"
         return-object
         class="ma-2"
         placeholder="select a filter"
@@ -26,8 +26,8 @@
         <template v-slot:item="{ props, item }">
             <v-list-item
                 v-bind="props"
-                :title="item.raw.name"
-                :subtitle="item.raw.group ? item.raw.group : ''"
+                :title="item.raw.values"
+                :subtitle="item.raw.name"
             ></v-list-item>
         </template>
 
@@ -38,46 +38,46 @@
 <script setup>
     import * as d3 from 'd3';
     import { useApp } from '@/store/app';
-    import { reactive, onMounted, watch } from 'vue';
+    import { computed, reactive, onMounted } from 'vue';
     import DS from '@/data-structure.json'
     import { FILTER_TYPES } from '@/use/filter';
+    import { storeToRefs } from 'pinia';
 
-    const data = reactive({
-        items: [],
-        selected: []
+    const app = useApp()
+    const data = reactive({ items: [] });
+
+    const { filtersJSON } = storeToRefs(app)
+    const selected = computed(() => {
+        return filtersJSON.value.map(f => {
+            return Array.isArray(f.values) ?
+                f.values.map(d => ({ name: f.name, values: d })) :
+                f
+        }).flat()
     });
 
     function init() {
         const items = [];
         Object.keys(DS).forEach(cat => {
             if (DS[cat].type === "string") {
-                DS[cat].values.forEach(d => items.push({ name: d, group: cat, key: DS[cat].key }))
+                DS[cat].values.forEach(d => items.push({ values: d, name: DS[cat].key }))
             }
         });
         data.items = items;
-        readFilters();
     }
 
-    const app = useApp()
 
-    function update() {
-        const g = d3.group(data.selected, d => d.group)
+    function update(items) {
+        const g = d3.group(items, d => d.name)
         app.clearFilters();
         g.forEach((array, _) => {
             if (array.length > 1) {
-                app.setFilter(FILTER_TYPES.SET, array[0].key, array.map(d => d.name))
+                app.setFilter(FILTER_TYPES.SET, array[0].name, array.map(d => d.values))
             } else {
-                app.setFilter(FILTER_TYPES.VALUE, array[0].key, array[0].name)
+                app.setFilter(FILTER_TYPES.VALUE, array[0].name, array[0].values)
             }
-        })
-    }
-
-    function readFilters() {
-        // TODO
+        });
     }
 
     onMounted(init)
-
-    watch(() => app.filterTime, readFilters)
 
 </script>

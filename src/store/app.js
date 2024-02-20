@@ -8,6 +8,10 @@ export const useApp = defineStore('app', {
         filterTime: null,
     }),
 
+    getters: {
+        filtersJSON: state => state.filters.map(f => f.toJSON())
+    },
+
     actions: {
 
         setFilter(type, name, values) {
