@@ -1,7 +1,7 @@
 <template>
     <div style="text-align: center;">
         <h6 v-if="title" class="pb-2">{{ title }}</h6>
-        <svg ref=el :width="width" :height="height"></svg>
+        <svg ref=el :width="size" :height="size"></svg>
     </div>
 </template>
 
@@ -17,11 +17,11 @@
             type: Array,
             required: true
         },
-        width: {
-            type: Number,
-            default: 250
+        colors: {
+            type: Array,
+            required: true
         },
-        height: {
+        size: {
             type: Number,
             default: 250
         },
@@ -48,7 +48,7 @@
 
     function draw() {
         const svg = d3.select(el.value)
-            .attr("viewBox", [-props.width/2, -props.height/2, props.width, props.height])
+            .attr("viewBox", [-props.size/2, -props.size/2, props.size, props.size])
         svg.selectAll("*").remove();
 
         const pie = d3.pie()
@@ -57,7 +57,7 @@
 
         const arc = d3.arc()
             .innerRadius(0)
-            .outerRadius(Math.min(props.width, props.height) / 2 - 1);
+            .outerRadius(props.size / 2 - 1);
 
         const labelRadius = arc.outerRadius()() * 0.6;
 
@@ -73,7 +73,7 @@
             .selectAll("path")
             .data(arcs)
             .join("path")
-            .attr("fill", (_, i) => d3.schemeSet2[i])
+            .attr("fill", (_, i) => props.colors[i])
             .attr("d", arc)
 
         piePieces.append("title")
@@ -100,12 +100,14 @@
             .join("text")
             .attr("transform", d => `translate(${arcLabel.centroid(d)})`)
             .call(text => text.append("tspan")
-                .attr("y", "-0.4em")
+                // .attr("y", "-0.2em")
                 .attr("font-weight", "bold")
+                .attr("font-size", props.size / 10)
                 .text(d => d.data[props.nameAttr]))
             .call(text => text.filter(d => (d.endAngle - d.startAngle) > 0.25).append("tspan")
                 .attr("x", 0)
-                .attr("y", "0.7em")
+                .attr("y", "1.2em")
+                .attr("font-size", props.size / 12)
                 .attr("fill-opacity", 0.7)
                 .text(d => d.data[props.valueAttr].toLocaleString("de-DE")));
     }

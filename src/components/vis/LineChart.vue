@@ -31,9 +31,9 @@
             type: String,
             default: "y"
         },
-        color: {
-            type: String,
-            default: "#8da0cb"
+        colors: {
+            type: Array,
+            required: true
         },
         title: {
             type: String,
@@ -69,11 +69,17 @@
         svg.selectAll("*").remove();
 
         const x = d3.scaleLinear()
-            .domain(d3.extent(props.data, d => d[props.xAttr]))
+            .domain([
+                d3.min(props.data, array => d3.min(array, d => d[props.xAttr])),
+                d3.max(props.data, array => d3.max(array, d => d[props.xAttr]))
+            ])
             .range([marginLeft, props.width-marginRight])
 
         const y = d3.scaleLinear()
-            .domain(d3.extent(props.data, d => d[props.yAttr]))
+            .domain([
+                d3.min(props.data, array => d3.min(array, d => d[props.yAttr])),
+                d3.max(props.data, array => d3.max(array, d => d[props.yAttr]))
+            ])
             .range([props.height-marginBottom, marginTop])
 
         const path = d3.line()
@@ -119,22 +125,28 @@
 
 
         // the line
-        svg.append("path")
-            .attr("d", path(props.data))
-            .attr("stroke", props.color)
+        svg.append("g")
+            .selectAll("path")
+            .data(props.data)
+            .join("path")
+            .attr("d", path)
+            .attr("stroke", (_, i) => props.colors[i])
             .attr("stroke-width", 2)
             .attr("fill", "none")
 
         // data point dots
         if (props.dots) {
             svg.append("g")
-                .selectAll("circle")
+                .selectAll("g")
                 .data(props.data)
-                .join("circle")
-                .attr("cx", d => x(d[props.xAttr]))
-                .attr("cy", d => y(d[props.yAttr]))
-                .attr("r", 4)
-                .attr("fill", props.color)
+                .join("g")
+                    .selectAll("circle")
+                    .data((d, i) => d.map(dd => ({ data: dd, index: i })))
+                    .join("circle")
+                    .attr("cx", d => x(d.data[props.xAttr]))
+                    .attr("cy", d => y(d.data[props.yAttr]))
+                    .attr("r", 4)
+                    .attr("fill", d => props.colors[d.index])
         }
     }
 

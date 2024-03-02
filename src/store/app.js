@@ -6,13 +6,39 @@ export const useApp = defineStore('app', {
     state: () => ({
         filters: [],
         filterTime: null,
+
+        selectedDS: {},
+        selectionTime: null
     }),
 
     getters: {
-        filtersJSON: state => state.filters.map(f => f.toJSON())
+        filtersJSON: state => state.filters.map(f => f.toJSON()),
+        selectedDSList: state => {
+            return Object.entries(state.selectedDS)
+                .filter(([_, val]) => val === true)
+                .map(([key, _]) => key)
+        }
     },
 
     actions: {
+
+        hasDataSource(id) {
+            return this.selectedDS[id] !== undefined;
+        },
+
+        addDataSource(id) {
+            this.selectedDS[id] = true;
+            this.selectionTime = Date.now();
+        },
+
+        toggleSelectedDataSource(id) {
+            if (this.hasDataSource(id)) {
+                this.selectedDS[id] = !this.selectedDS[id];
+            } else {
+                this.selectedDS[id] = true;
+            }
+            this.selectionTime = Date.now();
+        },
 
         setFilter(type, name, values) {
             const f = this.getFilter(name)

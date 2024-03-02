@@ -14,20 +14,12 @@
         density="comfortable"
         @update:model-value="update">
 
-
-        <!-- <template v-slot:chip="{ props, item }">
-            <v-chip
-                v-bind="props"
-                :prepend-avatar="item.raw.avatar"
-                :text="item.raw.name"
-            ></v-chip>
-        </template> -->
-
         <template v-slot:item="{ props, item }">
             <v-list-item
                 v-bind="props"
                 :title="item.raw.values"
                 :subtitle="item.raw.name"
+                density="compact"
             ></v-list-item>
         </template>
 
