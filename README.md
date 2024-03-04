@@ -10,6 +10,8 @@ This is the official scaffolding tool for Vuetify, designed to give you a head s
 - 🎮 [Playground](https://play.vuetifyjs.com/)
 - 💬 [Discord](https://community.vuetifyjs.com)
 
+- [DEMO](https://rwarnking.github.io/dashboard/)
+
 ## 💿 Install
 
 Set up your project using your preferred package manager. Use the corresponding command to install the dependencies:
