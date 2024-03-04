@@ -54,9 +54,34 @@ function genDiagnosisData(data) {
     return result
 }
 
+function genStoneData(data, minStone, maxStone) {
+    const g = d3.group(data, d => d.stones);
+    const tmp = Array.from(g, ([stoneSize, value]) => {
+        let curedCount = 0
+        value.forEach(elem => {
+            if (elem.cured)
+                curedCount++
+        })
+        return {
+            stoneSize: Number.parseInt(stoneSize),
+            value: curedCount / value.length
+        }
+    });
+
+    // Search for container that are missing by iterating the range of possibilities
+    const result = [];
+    d3.range(minStone, maxStone+1).forEach(i => {
+        const item = tmp.find(d => d.stoneSize === i);
+        result.push(item ? item : { stoneSize: i, value: 0 })
+    });
+
+    return result
+}
+
 export {
     genAgeData,
     genSexData,
     genKaplanData,
-    genDiagnosisData
+    genDiagnosisData,
+    genStoneData
 }

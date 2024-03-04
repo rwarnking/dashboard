@@ -37,9 +37,9 @@
                     <LineChart title="Kaplan Meier Curve"
                         class="card"
                         :data="kaplanData"
+                        :colors="colors"
                         :width="650"
                         :height="250"
-                        :colors="colors"
                         x-attr="time"
                         y-attr="st"
                         grid dots
@@ -53,11 +53,23 @@
                         :colors="colors"
                         :width="650"
                         :height="250"
-                        grid
-                        angled-ticks
                         x-attr="name"
                         y-attr="value"
+                        grid
+                        angled-ticks
                         group-attr="_group"/>
+                </v-card>
+                <v-card class="pa-3 mb-2">
+                    <LineChartX title="Stonesize v Successrate"
+                        class="card"
+                        :data="stoneData"
+                        :colors="colors"
+                        :width="650"
+                        :height="250"
+                        x-attr="stoneSize"
+                        y-attr="value"
+                        grid
+                        format=".1f"/>
                 </v-card>
             </div>
         </section>
@@ -68,6 +80,7 @@
     import * as d3 from 'd3';
     import SearchBar from '@/components/SearchBar.vue';
     import LineChart from '@/components/vis/LineChart.vue';
+    import LineChartX from '@/components/vis/LineChartX.vue';
     import DataSelector from '@/components/DataSelector.vue';
     import GroupedHistogram from '@/components/vis/GroupedHistogram.vue';
 
@@ -89,6 +102,7 @@
     const sexData = computed(() => DM.getDataByAttr("sex", selectedDSList.value))
     const kaplanData = computed(() => DM.getDataByAttr("kaplan", selectedDSList.value))
     const diagData = computed(() => DM.getDataByAttrFlat("diagnosis", selectedDSList.value))
+    const stoneData = computed(() => DM.getDataByAttr("stone", selectedDSList.value))
 
     const colors = computed(() => DM.getSourceColors(selectedDSList.value))
 
