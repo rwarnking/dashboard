@@ -63,6 +63,7 @@
                     <LineChartX title="Stonesize v Successrate"
                         class="card"
                         :data="stoneData"
+                        :data2="stoneStdData"
                         :colors="colors"
                         :width="650"
                         :height="250"
@@ -93,16 +94,26 @@
     const app = useApp();
     const { selectedDSList } = storeToRefs(app)
 
-    DM.add(DataSource.generate("Mannheim"))
-    app.addDataSource("Mannheim")
-    DM.add(DataSource.generate("Deutschland"))
+    const mannheim = DataSource.generate("Mannheim")
+    const stuttgart = DataSource.generate("Stuttgart")
+    const munich = DataSource.generate("München")
+
+    const germany = DataSource.combine("Deutschland", [mannheim, stuttgart, munich])
+
+    DM.add(germany)
     app.addDataSource("Deutschland")
+    DM.add(mannheim)
+    app.addDataSource("Mannheim")
+    DM.add(stuttgart)
+    app.addDataSource("Stuttgart")
 
     const ageData = computed(() => DM.getDataByAttrFlat("age", selectedDSList.value))
     const sexData = computed(() => DM.getDataByAttr("sex", selectedDSList.value))
     const kaplanData = computed(() => DM.getDataByAttr("kaplan", selectedDSList.value))
     const diagData = computed(() => DM.getDataByAttrFlat("diagnosis", selectedDSList.value))
     const stoneData = computed(() => DM.getDataByAttr("stone", selectedDSList.value))
+    let stoneStdData = computed(() => DM.getDataByAttr("stone_std", selectedDSList.value))
+    // stoneStdData = stoneStdData.filter(item => item !== undefined)
 
     const colors = computed(() => DM.getSourceColors(selectedDSList.value))
 

@@ -15,6 +15,10 @@
             type: Array,
             required: true
         },
+        data2: {
+            type: Array,
+            required: true
+        },
         width: {
             type: Number,
             default: 350
@@ -127,6 +131,17 @@
             .attr("transform", `translate(${marginLeft},0)`)
             .call(d3.axisLeft(y).tickFormat(d3.format(props.format)))
 
+        // the area
+        svg.append("g")
+            .selectAll("path")
+            .data(props.data2.filter(item => item !== undefined))
+            .join("path")
+            .attr("d", path)
+            .attr("stroke", props.colors[0])
+            .attr("stroke-width", 2)
+            .attr("fill", props.colors[0])
+            .style("opacity", .3)
+            .style("fill-opacity", .5)
 
         // the line
         svg.append("g")
