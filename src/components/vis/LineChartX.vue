@@ -15,7 +15,7 @@
             type: Array,
             required: true
         },
-        data2: {
+        areas: {
             type: Array,
             required: true
         },
@@ -134,14 +134,21 @@
         // the area
         svg.append("g")
             .selectAll("path")
-            .data(props.data2.filter(item => item !== undefined))
+            .data(props.areas.map((d, i) => ({ index: i, values: d })).filter(d => d.values))
             .join("path")
-            .attr("d", path)
-            .attr("stroke", props.colors[0])
+            .attr("d", d => path(d.values))
+            .attr("stroke", d => props.colors[d.index])
             .attr("stroke-width", 2)
-            .attr("fill", props.colors[0])
-            .style("opacity", .3)
-            .style("fill-opacity", .5)
+            .attr("fill", d => props.colors[d.index])
+            .attr("stroke-opacity", .5)
+            .attr("fill-opacity", .3)
+            .on("pointerenter", function() {
+                d3.select(this).attr("fill-opacity", 0.6).raise()
+            })
+            .on("pointerleave", function() {
+                d3.select(this).attr("fill-opacity", 0.3)
+            })
+
 
         // the line
         svg.append("g")

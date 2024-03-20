@@ -124,8 +124,9 @@
             .call(d3.axisLeft(y).tickFormat(d3.format(props.format)))
 
 
+        let circles;
         // the line
-        svg.append("g")
+        const lines = svg.append("g")
             .selectAll("path")
             .data(props.data)
             .join("path")
@@ -133,10 +134,18 @@
             .attr("stroke", (_, i) => props.colors[i])
             .attr("stroke-width", 2)
             .attr("fill", "none")
+            .on("pointerenter", function(_, d, i) {
+                d3.select(this).attr("stroke-width", 4).raise()
+                circles.filter(d => i === d.index).attr("r", 6).raise()
+            })
+            .on("pointerleave", function(_, d, i) {
+                d3.select(this).attr("stroke-width", 2)
+                circles.filter(d => i === d.index).attr("r", 4)
+            })
 
         // data point dots
         if (props.dots) {
-            svg.append("g")
+            circles = svg.append("g")
                 .selectAll("g")
                 .data(props.data)
                 .join("g")
@@ -147,6 +156,17 @@
                     .attr("cy", d => y(d.data[props.yAttr]))
                     .attr("r", 4)
                     .attr("fill", d => props.colors[d.index])
+                    .on("pointerenter", function(_, d) {
+                        d3.select(this).attr("r", 6).raise()
+                        lines.filter((_, i) => i === d.index)
+                            .attr("stroke-width", 4)
+                            .raise()
+                    })
+                    .on("pointerleave", function(_, d) {
+                        d3.select(this).attr("r", 4)
+                        lines.filter((_, i) => i === d.index)
+                            .attr("stroke-width", 2)
+                    })
         }
     }
 

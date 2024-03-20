@@ -1,6 +1,6 @@
 <template>
     <div style="text-align: center;">
-        <h6 v-if="title" class="pb-2">{{ title }}</h6>
+        <h6 v-if="title" class="mt-1 pb-2">{{ title }}</h6>
         <svg ref=el :width="width" :height="height"></svg>
     </div>
 </template>
@@ -69,10 +69,10 @@
 
     const el = ref(null)
 
-    const marginTop = 30;
+    const marginTop = 20;
     const marginRight = 10;
     const marginBottom = 50;
-    const marginLeft = 40;
+    const marginLeft = 20;
 
     const app = useApp();
 

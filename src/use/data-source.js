@@ -61,9 +61,8 @@ export default class DataSource {
         return src;
     }
 
-    static combine(
-        name, data_srcs
-    ) {
+    static combine(name, data_srcs) {
+
         const src = new DataSource(name);
 
         let stone_data = []
@@ -72,10 +71,11 @@ export default class DataSource {
         data_srcs.forEach(data_src => {
             Object.entries(data_src.data).forEach(([key, categories]) => {
                 src.mergeData(key, categories);
-                if (key === "stone")
+                if (key === "stone") {
                     stone_data = stone_data.concat(categories)
-                else if (key === "kaplan")
+                } else if (key === "kaplan") {
                     kaplan_data = kaplan_data.concat(categories)
+                }
             });
         });
 
@@ -83,24 +83,17 @@ export default class DataSource {
         // Stone size
         ///////////////////
         const g = d3.group(stone_data, d => d.stoneSize);
-        const tmp = Array.from(g, ([name, value]) => {
-            let median = d3.sum(value, d => d.value) / value.length
-            return ({ stoneSize: name, value: median})
-        });
+        const tmp = Array.from(g, ([name, value]) => ({ stoneSize: name, value: d3.sum(value, d => d.value) / value.length }));
 
         let tmp2 = Array.from(g, ([name, value]) => {
             let median = d3.sum(value, d => d.value) / value.length
-
             let std_dev = Math.sqrt(d3.sum(value, d => (Math.pow(d.value - median, 2) * 1 / value.length)))
-
-            return ({ stoneSize: name, value: median - std_dev})
+            return { stoneSize: name, value: median - std_dev }
         });
         tmp2 = tmp2.concat(Array.from(g, ([name, value]) => {
             let median = d3.sum(value, d => d.value) / value.length
-
             let std_dev = Math.sqrt(d3.sum(value, d => (Math.pow(d.value - median, 2) * 1 / value.length)))
-
-            return ({ stoneSize: name, value: median + std_dev})
+            return { stoneSize: name, value: median + std_dev}
         }).reverse())
         src.data["stone"] = tmp
         src.data["stone_std"] = tmp2
@@ -109,10 +102,7 @@ export default class DataSource {
         // Kaplan
         ///////////////////
         const g2 = d3.group(kaplan_data, d => d.time);
-        const rows = Array.from(g2, ([name, value]) => {
-            let m = d3.sum(value, d => d.m)
-            return ({ time: name, m: m})
-        });
+        const rows = Array.from(g2, ([name, value]) => ({ time: name, m: d3.sum(value, d => d.m) }));
 
         const cmpl_size = 900
         rows[0].n = cmpl_size
@@ -138,9 +128,7 @@ export default class DataSource {
 
         if (attr in this.data) {
             if (attr === "age" || attr === "sex" || attr === "diagnosis") {
-                Object.entries(data).forEach(([key, value]) => {
-                    this.data[attr][key]["value"] += value["value"]
-                });
+                Object.entries(data).forEach(([key, value]) => this.data[attr][key]["value"] += value["value"]);
             }
         } else {
             this.data[attr] = structuredClone(data);

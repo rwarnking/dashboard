@@ -1,6 +1,6 @@
 <template>
     <v-autocomplete
-        style="width: 97%;"
+        style="width: 99%;"
         :model-value="selected"
         :items="data.items"
         item-title="values"

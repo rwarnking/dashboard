@@ -1,17 +1,15 @@
 <template>
-    <div class="d-flex">
-        <aside style="width: 300px;">
-            <v-card class="ma-2 pa-2">
-                <DataSelector/>
-            </v-card>
-        </aside>
-        <section style="width: 100%;">
-            <div class="d-flex flex-column align-start">
-                <SearchBar/>
-                <div class="d-flex flex-wrap mb-2">
-                <v-card class="pa-3 mr-1">
+    <div class="d-flex align-start justify-start">
+        <v-card class="ma-2 pa-2" width="200">
+            <DataSelector/>
+        </v-card>
+        <section>
+            <SearchBar/>
+            <div class="d-flex flex-wrap mb-2">
+                <v-card class="d-flex pa-2 mr-1">
                     <PieChart v-for="(array,i) in sexData"
                         :title="'Sex Distribution '+selectedDSList[i]"
+                        class="mr-2"
                         :data="array"
                         :colors="d3.schemeBlues[3]"
                         :size="150"
@@ -19,60 +17,65 @@
                         name-attr="sex"
                         value-attr="value"/>
                 </v-card>
-                <v-card class="pa-3 ml-1">
+                <v-card class="pa-2 ml-1">
                     <GroupedHistogram title="Age Distribution"
                         class="card"
                         :data="ageData"
                         :colors="colors"
-                        :width="500"
-                        :height="200"
+                        :width="1180 - sexData.length * 152"
+                        :height="250"
                         auto-ticks
                         selectable
                         x-attr="age"
                         y-attr="value"
                         group-attr="_group"/>
                 </v-card>
-                </div>
-                <v-card class="pa-3 mb-2">
-                    <LineChart title="Kaplan Meier Curve"
-                        class="card"
-                        :data="kaplanData"
-                        :colors="colors"
-                        :width="650"
-                        :height="250"
-                        x-attr="time"
-                        y-attr="st"
-                        grid dots
-                        curve="curveStepAfter"
-                        format=".1f"/>
-                </v-card>
-                <v-card class="pa-3 mb-2">
-                    <GroupedHistogram title="Diagnosis"
-                        class="card"
-                        :data="diagData"
-                        :colors="colors"
-                        :width="650"
-                        :height="250"
-                        x-attr="name"
-                        y-attr="value"
-                        grid
-                        angled-ticks
-                        group-attr="_group"/>
-                </v-card>
-                <v-card class="pa-3 mb-2">
-                    <LineChartX title="Stonesize v Successrate"
-                        class="card"
-                        :data="stoneData"
-                        :data2="stoneStdData"
-                        :colors="colors"
-                        :width="650"
-                        :height="250"
-                        x-attr="stoneSize"
-                        y-attr="value"
-                        grid
-                        format=".1f"/>
-                </v-card>
             </div>
+            
+            <div class="d-flex flex-wrap mb-2">
+            <v-card class="pa-2 mr-1">
+                <LineChart title="Kaplan Meier Curve"
+                    class="card"
+                    :data="kaplanData"
+                    :colors="colors"
+                    :width="600"
+                    :height="250"
+                    x-attr="time"
+                    y-attr="st"
+                    grid dots
+                    curve="curveStepAfter"
+                    format=".1f"/>
+            </v-card>
+            
+            <v-card class="pa-2 ml-1">
+                <LineChartX title="Stonesize v Successrate"
+                    class="card"
+                    :data="stoneData"
+                    :areas="stoneStdData"
+                    :colors="colors"
+                    :width="600"
+                    :height="250"
+                    x-attr="stoneSize"
+                    y-attr="value"
+                    curve="curveBumpX"
+                    grid
+                    format=".1f"/>
+            </v-card>
+            </div>
+
+            <v-card class="pa-2 mb-2">
+                <GroupedHistogram title="Diagnosis"
+                    class="card"
+                    :data="diagData"
+                    :colors="colors"
+                    :width="1200"
+                    :height="350"
+                    x-attr="name"
+                    y-attr="value"
+                    grid
+                    angled-ticks
+                    group-attr="_group"/>
+            </v-card>
         </section>
     </div>
 </template>
@@ -112,8 +115,7 @@
     const kaplanData = computed(() => DM.getDataByAttr("kaplan", selectedDSList.value))
     const diagData = computed(() => DM.getDataByAttrFlat("diagnosis", selectedDSList.value))
     const stoneData = computed(() => DM.getDataByAttr("stone", selectedDSList.value))
-    let stoneStdData = computed(() => DM.getDataByAttr("stone_std", selectedDSList.value))
-    // stoneStdData = stoneStdData.filter(item => item !== undefined)
+    const stoneStdData = computed(() => DM.getDataByAttr("stone_std", selectedDSList.value))
 
     const colors = computed(() => DM.getSourceColors(selectedDSList.value))
 
